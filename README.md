@@ -1,16 +1,23 @@
-# eagles_result_card
+# 🎓 Result Card Maker (Flutter Web)
 
-result card
+A professional result card generator built with Flutter Web. Designed for schools, coaching centers, and institutions to highlight student achievements in a modern and visually appealing format.
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## ✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- Student name, photo, exam details, and result display
+- "Congratulations" banner for toppers
+- Institution logo and contact section
+- Clean and gradient-rich UI design
+- Optimized for print and social media sharing
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🚀 Getting Started
+
+```bash
+git clone https://github.com/ANANDU-COD/result_card_maker.git
+cd result_card_maker
+flutter pub get
+flutter run -d chrome
