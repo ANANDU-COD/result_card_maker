@@ -14,10 +14,3 @@ A professional result card generator built with Flutter Web. Designed for school
 
 ---
 
-## 🚀 Getting Started
-
-```bash
-git clone https://github.com/ANANDU-COD/result_card_maker.git
-cd result_card_maker
-flutter pub get
-flutter run -d chrome
