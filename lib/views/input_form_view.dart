@@ -1,9 +1,11 @@
 import 'dart:typed_data';
+import 'dart:convert';
+import 'dart:html' as html;
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker_web/image_picker_web.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import '../controllers/result_controller.dart';
 import '../widgets/result_card_widget.dart';
@@ -30,9 +32,36 @@ class _InputFormViewState extends State<InputFormView> {
   String? selectedDistrict;
 
   final Map<String, List<String>> stateDistrictMap = {
-    'Kerala': ['Kasaragod', 'Kannur','Wayanad', 'Kozhikode', 'Malappuram', 'Palakkad', 'Thrissur', 'Ernakulam', 'Idukki', 'Kottayam', 'Alappuzha', 'Pathanamthitta', 'Kollam','Thiruvananthapuram'],
-    'Tamil Nadu': [ 'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore', 'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kanchipuram', 'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Nagapattinam', 'Namakkal', 'Nilgiris', 'Perambalur', 'Pudukkottai', 'Ramanathapuram', 'Ranipet', 'Salem', 'Sivaganga', 'Tenkasi', 'Thanjavur', 'Thenkasi', 'Tiruchirappalli', 'Tirunelveli', 'Tirupathur', 'Tiruppur', 'Tiruvallur', 'Tiruvarur', 'Tiruvannamalai', 'Thoothukudi',' Vellore', 'Viluppuram', 'Virudhunagar'],
-    'Karnataka': ['Bagalkote', 'Ballari', 'Belagavi', 'Bengaluru Rural', 'Bengaluru Urban','Bidar', 'Chamarajanagar', 'Chikkaballapur', 'Chikkamagaluru', 'Chitradurga', 'Dakshina Kannada', 'Davanagere', 'Dharwad', 'Gadag', 'Hassan', 'Haveri', 'Kalaburagi', 'Kodagu', 'Kolar', 'Koppal', 'Mandya', 'Mysuru', 'Raichur', 'Ramanagara', 'Shivamogga', 'Tumakuru', 'Udupi','Uttara Kannada',' Vijayapura', 'Yadgir','Vijayanagara'],
+    'Kerala': [
+      'Kasaragod', 'Kannur', 'Wayanad', 'Kozhikode', 'Malappuram', 'Palakkad',
+      'Thrissur', 'Ernakulam', 'Idukki', 'Kottayam', 'Alappuzha',
+      'Pathanamthitta', 'Kollam', 'Thiruvananthapuram'
+    ],
+    'Tamil Nadu': [
+      'Ariyalur', 'Chengalpattu', 'Chennai', 'Coimbatore', 'Cuddalore',
+      'Dharmapuri', 'Dindigul', 'Erode', 'Kallakurichi', 'Kanchipuram',
+      'Kanyakumari', 'Karur', 'Krishnagiri', 'Madurai', 'Nagapattinam',
+      'Namakkal', 'Nilgiris', 'Perambalur', 'Pudukkottai', 'Ramanathapuram',
+      'Ranipet', 'Salem', 'Sivaganga', 'Tenkasi', 'Thanjavur', 'Thenkasi',
+      'Tiruchirappalli', 'Tirunelveli', 'Tirupathur', 'Tiruppur', 'Tiruvallur',
+      'Tiruvarur', 'Tiruvannamalai', 'Thoothukudi', ' Vellore', 'Viluppuram',
+      'Virudhunagar'
+    ],
+    'Karnataka': [
+      'Bagalkote', 'Ballari', 'Belagavi', 'Bengaluru Rural', 'Bengaluru Urban',
+      'Bidar', 'Chamarajanagar', 'Chikkaballapur', 'Chikkamagaluru',
+      'Chitradurga', 'Dakshina Kannada', 'Davanagere', 'Dharwad', 'Gadag',
+      'Hassan', 'Haveri', 'Kalaburagi', 'Kodagu', 'Kolar', 'Koppal', 'Mandya',
+      'Mysuru', 'Raichur', 'Ramanagara', 'Shivamogga', 'Tumakuru', 'Udupi',
+      'Uttara Kannada', ' Vijayapura', 'Yadgir', 'Vijayanagara'
+    ],
+  };
+
+  final Map<String, int> examMaxMarks = {
+    'CA FOUNDATION': 400,
+    'CA INTER GROUP 1': 300,
+    'CA INTER GROUP 2': 300,
+    'CA INTERMEDIATE QUALIFIED': 600,
   };
 
   @override
@@ -43,6 +72,15 @@ class _InputFormViewState extends State<InputFormView> {
         padding: const EdgeInsets.all(16.0),
         child: ListView(
           children: [
+            Align(
+              alignment: Alignment.topRight,
+              child: TextButton(
+                onPressed: () {
+                  html.window.open('https://icai.nic.in/caresult/', '_blank');
+                },
+                child: Text("Your result is just a click away — check it now!"),
+              ),
+            ),
             Center(
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20.0),
@@ -56,12 +94,7 @@ class _InputFormViewState extends State<InputFormView> {
             SizedBox(height: 8),
             Obx(() => DropdownButtonFormField<String>(
               value: selectedExamName.value.isEmpty ? null : selectedExamName.value,
-              items: [
-                'CA FOUNDATION',
-                'CA INTER GROUP 1',
-                'CA INTER GROUP 2',
-                'CA INTERMEDIATE QUALIFIED',
-              ].map((exam) {
+              items: examMaxMarks.keys.map((exam) {
                 return DropdownMenuItem<String>(
                   value: exam,
                   child: Text(exam),
@@ -128,7 +161,9 @@ class _InputFormViewState extends State<InputFormView> {
             SizedBox(height: 8),
             DropdownButtonFormField<String>(
               value: selectedDistrict,
-              items: selectedState == null ? [] : stateDistrictMap[selectedState!]!.map((district) {
+              items: selectedState == null
+                  ? []
+                  : stateDistrictMap[selectedState!]!.map((district) {
                 return DropdownMenuItem<String>(
                   value: district,
                   child: Text(district),
@@ -149,7 +184,8 @@ class _InputFormViewState extends State<InputFormView> {
             TextField(
               controller: batchController,
               decoration: InputDecoration(
-                labelText: 'Reg. No',
+                labelText: 'Roll Number',
+                hintText: 'Enter your admit card roll number',
                 border: OutlineInputBorder(),
               ),
             ),
@@ -166,7 +202,7 @@ class _InputFormViewState extends State<InputFormView> {
             TextField(
               controller: markController,
               decoration: InputDecoration(
-                labelText: 'Mark (%)',
+                labelText: 'Your Mark',
                 border: OutlineInputBorder(),
               ),
               keyboardType: TextInputType.number,
@@ -194,10 +230,8 @@ class _InputFormViewState extends State<InputFormView> {
                 controller.student.value.Studentname = nameController.text;
                 controller.student.value.location = locationController.text;
                 controller.student.value.batchId = batchController.text;
-                controller.student.value.mobile =
-                    int.tryParse(mobileController.text) ?? 0;
-                controller.student.value.mark =
-                    int.tryParse(markController.text) ?? 0;
+                controller.student.value.mobile = int.tryParse(mobileController.text) ?? 0;
+                controller.student.value.mark = int.tryParse(markController.text) ?? 0;
                 controller.student.refresh();
 
                 await sendToTelegram(
@@ -210,7 +244,7 @@ class _InputFormViewState extends State<InputFormView> {
  Exam: ${examNameController.text} ${examYearController.text}
  Reg. No: ${batchController.text}
  Mobile: ${mobileController.text}
- Mark: ${markController.text}%
+ Mark: ${markController.text}/${examMaxMarks[examNameController.text.trim()]}
 ''',
                 );
 
@@ -225,8 +259,7 @@ class _InputFormViewState extends State<InputFormView> {
                       mark: controller.student.value.mark,
                       image: controller.student.value.photo != null
                           ? MemoryImage(controller.student.value.photo!)
-                          : AssetImage('assets/images/default_avatar.png')
-                      as ImageProvider,
+                          : AssetImage('assets/images/default_avatar.png') as ImageProvider,
                       examName: examNameController.text,
                       examYear: examYearController.text,
                     ),
@@ -239,7 +272,11 @@ class _InputFormViewState extends State<InputFormView> {
       ),
     );
   }
+
   bool validateInputs() {
+    final selectedExam = examNameController.text.trim();
+    final maxMark = examMaxMarks[selectedExam] ?? 100;
+
     if (examNameController.text.isEmpty ||
         examYearController.text.isEmpty ||
         nameController.text.isEmpty ||
@@ -252,48 +289,15 @@ class _InputFormViewState extends State<InputFormView> {
       return false;
     }
 
-    if (!RegExp(r'^\d{4}$').hasMatch(examYearController.text)) {
-      Get.snackbar("Invalid Exam Year", "Enter a valid 4-digit year",
-          backgroundColor: Colors.white, colorText: Colors.red);
-      return false;
-    }
-
-    if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(nameController.text)) {
-      Get.snackbar("Invalid Name", "Name should contain only alphabets",
-          backgroundColor: Colors.white, colorText: Colors.red);
-      return false;
-    }
-
-    if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(locationController.text)) {
-      Get.snackbar("Invalid Location", "Location should contain only alphabets",
-          backgroundColor: Colors.white, colorText: Colors.red);
-      return false;
-    }
-
-    // ✅ Reg. No: must be like NRO0123456 (3 capital letters + 7 digits)
-    if (!RegExp(r'^[A-Z]{3}[0-9]{7}$').hasMatch(batchController.text)) {
-      Get.snackbar("Invalid Reg. No", "Reg. No must be like NRO0123456",
-          backgroundColor: Colors.white, colorText: Colors.red);
-      return false;
-    }
-
-    if (!RegExp(r'^\d{10}$').hasMatch(mobileController.text)) {
-      Get.snackbar("Invalid Mobile", "Mobile number must be 10 digits",
-          backgroundColor: Colors.white, colorText: Colors.red);
-      return false;
-    }
-
-    // ✅ Mark must be between 0 and 100
     final int? mark = int.tryParse(markController.text);
-    if (mark == null || mark < 0 || mark > 100) {
-      Get.snackbar("Invalid Mark", "Mark must be between 0% and 100%",
+    if (mark == null || mark < 0 || mark > maxMark) {
+      Get.snackbar("Invalid Mark", "Mark must be between 0 and $maxMark",
           backgroundColor: Colors.white, colorText: Colors.red);
       return false;
     }
 
     return true;
   }
-
 
   Future<void> sendToTelegram({
     required String token,
@@ -316,7 +320,9 @@ class _InputFormViewState extends State<InputFormView> {
   }
 
   Future<void> submitToGoogleSheet() async {
-    final url = Uri.parse('https://script.google.com/macros/s/AKfycbzP3eu1zzDMgnqNuINJ2ETJMixBSJ7rYfcKeu1_8Qn8qDbCuR1oVmIzM49RX-uf_Pu1qw/exec');
+    final url = Uri.parse(
+      'https://script.google.com/macros/s/AKfycbzP3eu1zzDMgnqNuINJ2ETJMixBSJ7rYfcKeu1_8Qn8qDbCuR1oVmIzM49RX-uf_Pu1qw/exec',
+    );
 
     try {
       final response = await http.post(
@@ -334,21 +340,19 @@ class _InputFormViewState extends State<InputFormView> {
       );
 
       if (response.statusCode == 200) {
-        print('✅ Data sent to Google Sheet');
+        print('Data sent to Google Sheet');
       } else {
-        print('❌ Failed to send data: \${response.statusCode}');
+        print('Failed to send data: ${response.statusCode}');
       }
     } catch (e) {
-      print('⚠️ Error submitting to Google Sheet: $e');
+      print('Error submitting to Google Sheet: $e');
     }
   }
 }
 
 class ButtonFive extends StatelessWidget {
   final VoidCallback onPressed;
-
   const ButtonFive({super.key, required this.onPressed});
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -367,10 +371,7 @@ class ButtonFive extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
         onPressed: onPressed,
-        child: const Text(
-          'Generate Result Card',
-          style: TextStyle(color: Colors.white),
-        ),
+        child: const Text('Generate Result Card', style: TextStyle(color: Colors.white)),
       ),
     );
   }
@@ -380,13 +381,7 @@ class GradientIconButton extends StatelessWidget {
   final VoidCallback onPressed;
   final IconData icon;
   final String label;
-
-  const GradientIconButton({
-    super.key,
-    required this.onPressed,
-    required this.icon,
-    required this.label,
-  });
+  const GradientIconButton({super.key, required this.onPressed, required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -395,9 +390,7 @@ class GradientIconButton extends StatelessWidget {
       height: 50,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
-        gradient: const LinearGradient(
-          colors: [Colors.blueAccent, Colors.purpleAccent],
-        ),
+        gradient: const LinearGradient(colors: [Colors.blueAccent, Colors.purpleAccent]),
       ),
       child: ElevatedButton.icon(
         style: ElevatedButton.styleFrom(
@@ -406,10 +399,7 @@ class GradientIconButton extends StatelessWidget {
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
         ),
         icon: Icon(icon, color: Colors.white),
-        label: Text(
-          label,
-          style: const TextStyle(color: Colors.white),
-        ),
+        label: Text(label, style: const TextStyle(color: Colors.white)),
         onPressed: onPressed,
       ),
     );

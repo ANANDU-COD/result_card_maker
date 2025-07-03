@@ -61,107 +61,115 @@ class _ResultCardWidgetState extends State<ResultCardWidget> {
     const double width = 560;
     const double height = 560;
 
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          RepaintBoundary(
-            key: _repaintKey,
-            child: Container(
-              width: width,
-              height: height,
-              padding: const EdgeInsets.all(18),
-              decoration: BoxDecoration(
-                image: const DecorationImage(
-                  image: AssetImage('assets/images/background.png'),
-                  fit: BoxFit.cover,
+    return Column(
+      children: [
+        Expanded(
+          child: Scrollbar(
+            thumbVisibility: true,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.vertical,
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: RepaintBoundary(
+                  key: _repaintKey,
+                  child: Container(
+                    width: width,
+                    height: height,
+                    padding: const EdgeInsets.all(18),
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/background.png'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 13),
+                          child: Text(
+                            widget.examName.toUpperCase(),
+                            style: GoogleFonts.bangers(
+                              fontSize: 33,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          widget.examYear,
+                          style: GoogleFonts.anton(
+                            fontSize: 20,
+                            color: Colors.white70,
+                          ),
+                        ),
+                        Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            Image.asset('assets/images/goldenround.png', width: 195),
+                            CircleAvatar(
+                              radius: 75,
+                              backgroundImage: widget.image,
+                            ),
+                          ],
+                        ),
+                        Text(
+                          widget.name.toUpperCase(),
+                          style: GoogleFonts.jost(
+                            fontSize: 15,
+                            color: Colors.white,
+                            letterSpacing: 1,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 30),
+                            Text(
+                              '${widget.mark} ',
+                              style: GoogleFonts.anton(
+                                fontSize: 28
+                                ,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                        Text(
+                          'Congratulations',
+                          style: GoogleFonts.dancingScript(
+                            fontSize: 38,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.amberAccent,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 13),
-                    child: Text(
-                      widget.examName.toUpperCase(),
-                      style: GoogleFonts.bangers(
-                        fontSize: 33,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    widget.examYear,
-                    style: GoogleFonts.anton(
-                      fontSize: 20,
-                      color: Colors.white70,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Image.asset('assets/images/golden_circle.png', width: 210),
-                      CircleAvatar(
-                        radius: 65,
-                        backgroundImage: widget.image,
-                      ),
-                    ],
-                  ),
-                  Text(
-                    widget.name.toUpperCase(),
-                    style: GoogleFonts.jost(
-                      fontSize: 15,
-                      color: Colors.white,
-                      letterSpacing: 1,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Icon(Icons.emoji_events_rounded, color: Colors.amber, size: 30),
-                      Text(
-                        '${widget.mark}%',
-                        style: GoogleFonts.fugazOne(
-                          fontSize: 25,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 3),
-                  Text(
-                    'Congratulations',
-                    style: GoogleFonts.dancingScript(
-                      fontSize: 38,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.amberAccent,
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                ],
-              ),
             ),
           ),
-          const SizedBox(height: 15),
-          ElevatedButton.icon(
-            onPressed: _isDownloading ? null : _downloadCard,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.deepPurpleAccent,
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30),
-              ),
-            ),
-            icon: const Icon(Icons.download, color: Colors.white),
-            label: Text(
-              _isDownloading ? 'Downloading...' : 'Download Card',
-              style: const TextStyle(color: Colors.white),
+        ),
+        const SizedBox(height: 15),
+        ElevatedButton.icon(
+          onPressed: _isDownloading ? null : _downloadCard,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.deepPurpleAccent,
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(30),
             ),
           ),
-        ],
-      ),
+          icon: const Icon(Icons.download, color: Colors.white),
+          label: Text(
+            _isDownloading ? 'Downloading...' : 'Download Card',
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      ],
     );
   }
 }
