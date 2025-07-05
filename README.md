@@ -10,7 +10,7 @@ A professional result card generator built with Flutter Web. Designed for school
 - "Congratulations" banner for toppers
 - Institution logo and contact section
 - Clean and gradient-rich UI design
-- Optimized for print and social media sharing
+- Optimized for print and  downloading
 
 ---
 
